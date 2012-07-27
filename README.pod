@@ -1,0 +1,18 @@
+=pod
+
+=encoding utf-8
+
+=head1 NAME
+
+urxvt extensions - an adaptation of the Perl urxvt extensions
+
+=head1 DESCRIPTION
+
+On this repository you can find my personal urxvt extensions. That can be
+enhancements just of a few lines to get a new functionality. Or in some cases
+complete new extensions. The enhancements are based on the original urxvt
+extensions which are in your package or comes with the source of urxvt itself. 
+
+See also L<http://software.schmorp.de/pkg/rxvt-unicode.html>
+
+=cut
