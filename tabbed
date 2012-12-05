@@ -85,17 +85,27 @@ sub configure {
 
    my $tab = $self->{cur};
 
-   # this is an extremely dirty way to force a configurenotify, but who cares
-   $tab->XMoveResizeWindow (
-      $tab->parent,
-      0, $self->{tabheight} + 1,
-      $self->width, $self->height - $self->{tabheight}
-   );
-   $tab->XMoveResizeWindow (
-      $tab->parent,
-      0, $self->{tabheight},
-      $self->width, $self->height - $self->{tabheight}
-   );
+   if ( $#{ $self->{tabs} } > 0 ) {
+       # this is an extremely dirty way to force a configurenotify, but who cares
+       $tab->XMoveResizeWindow (
+           $tab->parent,
+           0, $self->{tabheight} + 1,
+           $self->width, $self->height - $self->{tabheight}
+       );
+       $tab->XMoveResizeWindow (
+           $tab->parent,
+           0, $self->{tabheight},
+           $self->width, $self->height - $self->{tabheight}
+       );
+   }
+   else {
+       $tab->XMoveResizeWindow (
+           $tab->parent,
+           0, 0,
+           $self->width, $self->height
+       );
+   }
+
 }
 
 sub on_resize_all_windows {
@@ -315,41 +325,51 @@ sub tab_destroy {
 sub tab_key_press {
     my ($self, $tab, $event, $keysym, $str) = @_;
 
+    my ($idx) = grep $self->{tabs}[$_] == $tab, 0 .. $#{ $self->{tabs} };
     if ($event->{state} & urxvt::ShiftMask) {
         if ($keysym == 0xff51 || $keysym == 0xff53) {
-            my ($idx) = grep $self->{tabs}[$_] == $tab, 0 .. $#{ $self->{tabs} };
 
+            $self->{lasttabindex} = $idx;
             --$idx if $keysym == 0xff51;
             ++$idx if $keysym == 0xff53;
 
             $self->make_current ($self->{tabs}[$idx % @{ $self->{tabs}}]);
-
             return 1;
         } elsif ($keysym == 0xff54) {
             $self->new_tab;
 
+            $self->{lasttabindex} = $idx;
             return 1;
         }
     }
     elsif ($event->{state} & urxvt::ControlMask) {
         if ($keysym == 0xff51 || $keysym == 0xff53) {
-            my ($idx1) = grep $self->{tabs}[$_] == $tab, 0 .. $#{ $self->{tabs} };
+            my $idx1 = $idx;
             my  $idx2  = ($idx1 + ($keysym == 0xff51 ? -1 : +1)) % @{ $self->{tabs} };
 
             ($self->{tabs}[$idx1], $self->{tabs}[$idx2]) =
             ($self->{tabs}[$idx2], $self->{tabs}[$idx1]);
 
             $self->make_current ($self->{tabs}[$idx2]);
+
+            $self->{lasttabindex} = $idx;
             return 1;
         }
         elsif ( $keysym >= 0x31 and $keysym <= 0x39 ) {
             my %keylist = ( 0x31 => 0, 0x32 => 1, 0x33 => 2, 0x34 => 3, 0x35 => 4, 
                 0x36 => 5, 0x37 => 6, 0x38 => 7, 0x39 => 8);
-            my $idx = $keylist{$keysym};
-            if ( $idx  <= $#{ $self->{tabs} } ) {
-                $self->make_current($self->{tabs}[$idx]);
+            my $nidx = $keylist{$keysym};
+            if ( $nidx  <= $#{ $self->{tabs} } ) {
+                $self->make_current($self->{tabs}[$nidx]);
+                $self->{lasttabindex} = $idx;
                 return 1;
             }
+        }
+        elsif ( $keysym = 0xff1b ) {
+            my $nidx = $self->{lasttabindex} if defined $self->{lasttabindex};
+            $self->make_current($self->{tabs}[$nidx]);
+            $self->{lasttabindex} = $idx;
+            return 1;
         }
     }
     ()
