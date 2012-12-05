@@ -13,6 +13,16 @@ enhancements just of a few lines to get a new functionality. Or in some cases
 complete new extensions. The enhancements are based on the original urxvt
 extensions which are in your package or comes with the source of urxvt itself. 
 
+=head1 INSTALLATION
+
+To use this extension you need only to copy the script in your extensions directory.
+
+    cp ./tabbed /usr/lib/urxvt/perl
+
+And write a line like this into your I<.Xdefaults>.
+
+    Urxvt.perl-ext-common: tabbed
+
 See also L<http://software.schmorp.de/pkg/rxvt-unicode.html>
 
 =cut

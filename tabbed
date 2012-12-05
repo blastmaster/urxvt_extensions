@@ -31,7 +31,6 @@ sub refresh {
        ? "*" : " ";
 
        my $txt = "$act$idx$act";
-       # my $txt = " you re hacked ";
 
        my $len = length $txt;
 
@@ -344,8 +343,9 @@ sub tab_key_press {
             return 1;
         }
         elsif ( $keysym >= 0x31 and $keysym <= 0x39 ) {
-            my @keylist = qw( 0x31 0x32 0x33 x034 0x35 0x36 0x37 0x38 0x39 );
-            my ( $idx ) = grep $keysym == hex $keylist[$_], 0 .. $#keylist;
+            my %keylist = ( 0x31 => 0, 0x32 => 1, 0x33 => 2, 0x34 => 3, 0x35 => 4, 
+                0x36 => 5, 0x37 => 6, 0x38 => 7, 0x39 => 8);
+            my $idx = $keylist{$keysym};
             if ( $idx  <= $#{ $self->{tabs} } ) {
                 $self->make_current($self->{tabs}[$idx]);
                 return 1;
