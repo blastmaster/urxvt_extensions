@@ -365,10 +365,10 @@ sub tab_key_press {
                 return 1;
             }
         }
-        elsif ( $keysym = 0xff1b ) {
+        elsif ( $keysym == 0xff1b ) {
             my $nidx = $self->{lasttabindex} if defined $self->{lasttabindex};
-            $self->make_current($self->{tabs}[$nidx]);
             $self->{lasttabindex} = $idx;
+            $self->make_current($self->{tabs}[$nidx]);
             return 1;
         }
     }
